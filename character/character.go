@@ -3,6 +3,9 @@ import (
 	"fmt"
 	"os"
 	"time"
+	"github.com/eiannone/keyboard"
+	"github.com/fatih/color"
+	"math/rand"
 )
 
 type Player struct {
@@ -32,19 +35,16 @@ func GameOver (){
 }
 
 func Combat (you Player, enemy Hollow){
-	for you.Health > 0{
-		
-		for x := 5; x > 0; x--{
-			var input string
-			fmt.Scanln(&input)
-			if input == "x" {
-				break
-			}
-			fmt.Println("Enemy Attacking")
-			fmt.Println("Press X to block or Z to attack")
-			time.Sleep(1 * time.Second)
-			you.Health = you.Health - 1
-		}
+	color.Red("Enenmy Hollow attacking")
+	color.Red("ENTERING COMBAT")
+	fmt.Println("Press X to block or Z to attack")
+
+	for randnum := rand.Intn(10); you.Health > 0;{
+		time.Sleep(time.Second * time.Duration(randnum))
+		color.Red("Enemy Attacking")
+
+		you.Health = you.Health - 1
+		GetInput()
 		enemy.Health = enemy.Health -2
 		fmt.Println("Player Health:", you.Health)
 		fmt.Println("Enemy Health:", enemy.Health)
@@ -55,6 +55,34 @@ func Combat (you Player, enemy Hollow){
 			break
 		}
 	}
-	
+}
 
+func GetInput(){
+	if err := keyboard.Open(); err != nil {
+		panic(err)
+	}
+	defer func() {
+		_ = keyboard.Close()
+	}()
+
+	for {
+		char, key, err := keyboard.GetKey()
+		if err != nil {
+			panic(err)
+		}
+		if string(char) == "z"{
+			color.Yellow("ATTACKING")
+			break
+		}
+		if string(char) == "x"{
+			color.Blue("BLOCKING")
+			break
+		}
+        if key == keyboard.KeyEsc {
+			break
+		}
+		if key == keyboard.KeyCtrlC {
+			break
+		}
+	}
 }
